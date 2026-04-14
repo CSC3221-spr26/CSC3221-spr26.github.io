@@ -20,19 +20,20 @@
 <body class="d-flex h-100 text-center text-white">
 
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-  <header class="mb-auto">
-    <div>
-      <h3 class="float-md-start mb-0 masthead-brand">Dominic Hatcher</h3>
-      <nav class="nav nav-masthead justify-content-center float-md-end">
-        <a class="nav-link active" aria-current="page" href="#">Home</a>
-        <a class="nav-link" href="#experience">Experience</a>
-        <a class="nav-link" href="https://linkedin.com" target="_blank">LinkedIn</a>
-      </nav>
-    </div>
-  </header>
+<header class="mb-auto">
+  <div class="d-flex flex-column align-items-center">
+    <!-- Removed float classes and added centering utilities -->
+    <h3 class="mb-3 masthead-brand">Dominic Hatcher</h3>
+    <nav class="nav nav-masthead justify-content-center">
+      <a class="nav-link active" aria-current="page" href="#">Home</a>
+      <a class="nav-link" href="#experience">Experience</a>
+      <a class="nav-link" href="https://linkedin.com" target="_blank">LinkedIn</a>
+    </nav>
+  </div>
+</header>
 
   <main class="px-3">
-    <h1 class="cover-heading">Building <em>Software</em> & Stories.</h1>
+    <h1 class="cover-heading">Here is What I have Done</h1>
     <div class="cover-divider"></div>
     <p class="cover-subheading">
         Computer Science & Communications student at SPU. 
@@ -47,26 +48,40 @@
     <div class="scroll-indicator mt-5">↓</div>
   </main>
 
-  <!-- Detailed Content Section -->
-  <div id="experience" class="row mt-5 pt-5 text-center">
-    <div class="col-12">
+<!-- Detailed Content Section -->
+  <div id="experience" class="row mt-5 pt-5 text-center justify-content-center">
+    <div class="col-md-10 col-lg-8">
         <h2 class="masthead-brand mb-4">Technical Experience</h2>
-        <div class="mb-4">
+        
+        <!-- Experience Item 1 -->
+        <div class="mb-5">
             <h5 class="mb-0">Create Space Navigator — <small class="text-white-50">EvCC Library</small></h5>
             <p class="small text-uppercase tracking-wider">July 2024 - Sept. 2025</p>
-            <ul class="cover-subheading" style="font-size: 0.9rem;">
+            <ul class="list-unstyled cover-subheading" style="font-size: 0.9rem; max-width: 100%;">
                 <li>Lead team coordination, event planning, and grant implementation.</li>
                 <li>Assisted in hiring and training new members to represent college values.</li>
             </ul>
         </div>
-        <div class="mb-4">
+
+        <!-- Experience Item 2 -->
+        <div class="mb-5">
             <h5 class="mb-0">Teen Storytellers Project Intern</h5>
             <p class="small text-uppercase">June 2025 - Aug. 2025</p>
-            <ul class="cover-subheading" style="font-size: 0.9rem;">
+            <ul class="list-unstyled cover-subheading" style="font-size: 0.9rem; max-width: 100%;">
                 <li>Facilitated filmmaking instruction and digital art production.</li>
                 <li>Mentored students through multi-week creative courses.</li>
             </ul>
         </div>
+
+        <div class="cover-divider"></div>
+
+        <!-- Leadership Section -->
+        <h2 class="masthead-brand mb-4 mt-4">Leadership</h2>
+        <ul class="list-unstyled cover-subheading" style="font-size: 0.9rem;">
+            <li>Team Lead — Hackathon/Game Jam teams (2024-Present)</li>
+            <li>Treasurer — STEM Club, EvCC (2024-2025)</li>
+            <li>Team Lead — V-Bot Robotics (2019-2024)</li>
+        </ul>
     </div>
   </div>
 
