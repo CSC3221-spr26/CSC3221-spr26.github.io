@@ -37,6 +37,7 @@ body {
   letter-spacing: 0.04em;
   color: #fff;
   text-decoration: none;
+  text-align: center;
 }
  
 .masthead-brand:hover {
@@ -64,6 +65,7 @@ body {
   line-height: 1.1;
   letter-spacing: -0.01em;
   margin-bottom: 0.5rem;
+  text-align: center;
 }
  
 .cover-heading em {
