@@ -29,6 +29,25 @@ body {
   background-position: center;
   background-attachment: fixed;
 }
+
+.resume-green {
+  color: #b8ff3d;
+}
+
+.resume-green .cover-heading,
+.resume-green .masthead-brand,
+.resume-green .cover-subheading,
+.resume-green .cover-footer,
+.resume-green .nav-link,
+.resume-green h5,
+.resume-green p,
+.resume-green li {
+  color: #b8ff3d;
+}
+
+.resume-green a {
+  color: #b8ff3d;
+}
  
 /* ── Brand / Logo ──────────────────────────────────── */
 .masthead-brand {
