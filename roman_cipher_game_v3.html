@@ -1,0 +1,259 @@
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --green:      #6dbf67;
+    --green-dim:  #4a9444;
+    --green-pale: #a8d5a2;
+    --green-glow: rgba(109,191,103,0.12);
+    --green-bg:   rgba(109,191,103,0.06);
+    --bg:         #2b2b2b;
+    --surface:    #333333;
+    --surface2:   #3a3a3a;
+    --border:     #484848;
+    --border-dim: #404040;
+    --muted:      #888888;
+    --text-main:  #cccccc;
+    --text-dim:   #7a7a7a;
+  }
+  .mx-root { background: var(--bg); font-family: 'Share Tech Mono', monospace; padding: 2.5rem 2.5rem; color: var(--text-main); min-height: 100%; position: relative; overflow: hidden; }
+  .scanline { pointer-events: none; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px); z-index: 0; }
+  .content { position: relative; z-index: 1; }
+
+  .mx-title { font-family: 'Orbitron', monospace; font-size: 1.55rem; font-weight: 900; color: var(--green); letter-spacing: 0.15em; text-transform: uppercase; text-shadow: 0 0 14px rgba(109,191,103,0.4); margin-bottom: 2px; }
+  .mx-subtitle { font-size: 0.68rem; color: var(--green-dim); letter-spacing: 0.28em; text-transform: uppercase; }
+
+  .mx-card { background: var(--surface); border: 1px solid var(--border); border-top: 1px solid var(--green-dim); border-radius: 6px; padding: 1.5rem; position: relative; }
+  .mx-card::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, var(--green-dim), transparent); }
+
+  .field-label { font-size: 0.63rem; letter-spacing: 0.22em; color: var(--green-dim); text-transform: uppercase; margin-bottom: 8px; }
+  .field-label::before { content: '> '; color: var(--green); }
+
+  .display-mono { font-family: 'Share Tech Mono', monospace; font-size: 1rem; letter-spacing: 0.1em; line-height: 1.9; word-break: break-word; min-height: 3rem; }
+  .encoded-text { color: var(--muted); }
+  .decoded-text { color: var(--text-dim); }
+  .char-match { color: var(--green); text-shadow: 0 0 6px rgba(109,191,103,0.5); }
+
+  .divider { border: none; border-top: 1px solid var(--border-dim); margin: 1.25rem 0; }
+
+  .shift-badge { display: inline-flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-left: 2px solid var(--green); border-radius: 4px; padding: 6px 16px; font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700; color: var(--green); text-shadow: 0 0 8px rgba(109,191,103,0.4); }
+
+  .btn-new-game { font-family: 'Orbitron', monospace; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 4px; background: transparent; color: var(--muted); padding: 8px 20px; cursor: pointer; transition: all 0.2s; }
+  .btn-new-game:hover { background: var(--green-bg); color: var(--green); border-color: var(--green-dim); box-shadow: 0 0 10px var(--green-glow); }
+
+  .success-banner { display: none; background: var(--green-bg); border: 1px solid var(--green-dim); border-left: 3px solid var(--green); border-radius: 4px; color: var(--green-pale); font-size: 0.78rem; letter-spacing: 0.1em; padding: 0.75rem 1rem; text-align: center; }
+
+  #wheel-svg { cursor: grab; touch-action: none; display: block; }
+  #wheel-svg:active { cursor: grabbing; }
+  .instruction { font-size: 0.63rem; color: var(--text-dim); letter-spacing: 0.2em; text-align: center; text-transform: uppercase; margin-top: 4px; }
+
+  .blink { animation: blink 1.2s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .corner-tl, .corner-tr { position: absolute; width: 10px; height: 10px; border-color: var(--border); border-style: solid; }
+  .corner-tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+  .corner-tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
+</style>
+
+<div class="mx-root">
+  <div class="scanline"></div>
+  <div class="content">
+
+    <div class="mb-4 px-1">
+      <div class="mx-title">CIPHER_ROTAE<span class="blink">_</span></div>
+      <div class="mx-subtitle">Roman Caesar Cipher // Decode Protocol</div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-md-7">
+        <div class="mx-card h-100 d-flex flex-column gap-3">
+          <div class="corner-tl"></div><div class="corner-tr"></div>
+
+          <div>
+            <div class="field-label">Encoded transmission</div>
+            <div class="display-mono encoded-text" id="encoded-display">—</div>
+          </div>
+          <hr class="divider">
+          <div>
+            <div class="field-label">Decoded output</div>
+            <div class="display-mono decoded-text" id="decoded-display">Awaiting cipher key…</div>
+          </div>
+          <hr class="divider">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-auto">
+            <div>
+              <div class="field-label">Active shift</div>
+              <div class="shift-badge">KEY: <span id="key-display">00</span></div>
+            </div>
+            <button class="btn-new-game" id="new-game-btn">[ NEW CIPHER ]</button>
+          </div>
+          <div class="success-banner" id="result-banner">✓ &nbsp; TRANSMISSION DECODED — CIPHER CRACKED</div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-5">
+        <div class="mx-card h-100 d-flex flex-column align-items-center justify-content-center gap-2">
+          <div class="corner-tl"></div><div class="corner-tr"></div>
+          <div class="field-label" style="align-self:flex-start">Cipher wheel</div>
+          <svg id="wheel-svg" width="230" height="230" viewBox="0 0 230 230"></svg>
+          <div class="instruction">drag to rotate</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SENTENCES = [
+  "the quick brown fox jumps over the lazy dog",
+  "all that glitters is not gold",
+  "to be or not to be that is the question",
+  "a journey of a thousand miles begins with a single step",
+  "the only way out is through",
+  "fortune favours the bold",
+  "knowledge is power",
+  "in the beginning was the word",
+  "every cloud has a silver lining",
+  "the truth will set you free",
+];
+const ALPHA = "abcdefghijklmnopqrstuvwxyz";
+const N = 26, CX = 115, CY = 115;
+const R_OUTER = 108, R_LABEL = 94, R_TICK = 103, R_INNER = 68;
+let cipherKey = 0, userShift = 0, wheelAngle = 0, encodedSentence = "", originalSentence = "";
+
+function caesar(text, shift) {
+  return text.split("").map(c => { const i = ALPHA.indexOf(c); return i === -1 ? c : ALPHA[(i + shift + N) % N]; }).join("");
+}
+
+function drawWheel(angleDeg) {
+  const svg = document.getElementById("wheel-svg");
+  svg.innerHTML = "";
+  const ns = "http://www.w3.org/2000/svg";
+  const green = "#6dbf67", greenDim = "#4a9444", greenPale = "#a8d5a2";
+  const ringFill = "#303030", ringStroke = "#484848", hubFill = "#333", hubStroke = "#484848";
+  const textCol = "#666666", tickCol = "#444444", innerRingCol = "#3d3d3d";
+
+  const ring = document.createElementNS(ns, "circle");
+  ring.setAttribute("cx", CX); ring.setAttribute("cy", CY); ring.setAttribute("r", R_OUTER);
+  ring.setAttribute("fill", ringFill); ring.setAttribute("stroke", ringStroke); ring.setAttribute("stroke-width", "1");
+  svg.appendChild(ring);
+
+  const innerRing = document.createElementNS(ns, "circle");
+  innerRing.setAttribute("cx", CX); innerRing.setAttribute("cy", CY); innerRing.setAttribute("r", R_INNER + 12);
+  innerRing.setAttribute("fill", "none"); innerRing.setAttribute("stroke", innerRingCol); innerRing.setAttribute("stroke-width", "0.5");
+  svg.appendChild(innerRing);
+
+  const outerAccent = document.createElementNS(ns, "circle");
+  outerAccent.setAttribute("cx", CX); outerAccent.setAttribute("cy", CY); outerAccent.setAttribute("r", R_OUTER);
+  outerAccent.setAttribute("fill", "none"); outerAccent.setAttribute("stroke", greenDim); outerAccent.setAttribute("stroke-width", "0.5");
+  svg.appendChild(outerAccent);
+
+  for (let i = 0; i < N; i++) {
+    const angle = ((i / N) * 360 + angleDeg - 90) * Math.PI / 180;
+    const lx = CX + R_LABEL * Math.cos(angle), ly = CY + R_LABEL * Math.sin(angle);
+    const t1x = CX + R_TICK * Math.cos(angle), t1y = CY + R_TICK * Math.sin(angle);
+    const t2x = CX + (R_INNER + 13) * Math.cos(angle), t2y = CY + (R_INNER + 13) * Math.sin(angle);
+    const isTop = i === 0;
+
+    if (isTop) {
+      const hl = document.createElementNS(ns, "circle");
+      hl.setAttribute("cx", lx); hl.setAttribute("cy", ly); hl.setAttribute("r", 12);
+      hl.setAttribute("fill", "#2a3a28"); hl.setAttribute("stroke", green); hl.setAttribute("stroke-width", "1");
+      svg.appendChild(hl);
+    }
+
+    const tick = document.createElementNS(ns, "line");
+    tick.setAttribute("x1", t1x); tick.setAttribute("y1", t1y); tick.setAttribute("x2", t2x); tick.setAttribute("y2", t2y);
+    tick.setAttribute("stroke", isTop ? greenDim : tickCol); tick.setAttribute("stroke-width", "0.5");
+    svg.appendChild(tick);
+
+    const letter = document.createElementNS(ns, "text");
+    letter.setAttribute("x", lx); letter.setAttribute("y", ly);
+    letter.setAttribute("text-anchor", "middle"); letter.setAttribute("dominant-baseline", "central");
+    letter.setAttribute("font-family", "'Share Tech Mono', monospace");
+    letter.setAttribute("font-size", isTop ? "12" : "10");
+    letter.setAttribute("fill", isTop ? green : textCol);
+    letter.textContent = ALPHA[i].toUpperCase();
+    svg.appendChild(letter);
+  }
+
+  const hub = document.createElementNS(ns, "circle");
+  hub.setAttribute("cx", CX); hub.setAttribute("cy", CY); hub.setAttribute("r", R_INNER);
+  hub.setAttribute("fill", hubFill); hub.setAttribute("stroke", hubStroke); hub.setAttribute("stroke-width", "1");
+  svg.appendChild(hub);
+
+  const shiftLbl = document.createElementNS(ns, "text");
+  shiftLbl.setAttribute("x", CX); shiftLbl.setAttribute("y", CY - 14);
+  shiftLbl.setAttribute("text-anchor", "middle"); shiftLbl.setAttribute("dominant-baseline", "central");
+  shiftLbl.setAttribute("font-family", "'Share Tech Mono', monospace"); shiftLbl.setAttribute("font-size", "9");
+  shiftLbl.setAttribute("fill", greenDim); shiftLbl.setAttribute("letter-spacing", "3");
+  shiftLbl.textContent = "SHIFT";
+  svg.appendChild(shiftLbl);
+
+  const shiftNum = document.createElementNS(ns, "text");
+  shiftNum.setAttribute("x", CX); shiftNum.setAttribute("y", CY + 14);
+  shiftNum.setAttribute("text-anchor", "middle"); shiftNum.setAttribute("dominant-baseline", "central");
+  shiftNum.setAttribute("font-family", "'Orbitron', monospace"); shiftNum.setAttribute("font-size", "26");
+  shiftNum.setAttribute("font-weight", "700"); shiftNum.setAttribute("fill", green);
+  shiftNum.textContent = String(userShift).padStart(2, "0");
+  svg.appendChild(shiftNum);
+
+  const py = CY - R_OUTER - 1;
+  const pointer = document.createElementNS(ns, "polygon");
+  pointer.setAttribute("points", `${CX - 6},${py + 12} ${CX + 6},${py + 12} ${CX},${py}`);
+  pointer.setAttribute("fill", green);
+  svg.appendChild(pointer);
+}
+
+function updateDecoded() {
+  const decoded = caesar(encodedSentence, -userShift);
+  document.getElementById("decoded-display").innerHTML = decoded.toUpperCase().split("").map((c, i) => {
+    if (c === " ") return " ";
+    return c === originalSentence.toUpperCase()[i] ? `<span class="char-match">${c}</span>` : c;
+  }).join("");
+  document.getElementById("key-display").textContent = String(userShift).padStart(2, "0");
+  document.getElementById("result-banner").style.display = decoded === originalSentence ? "block" : "none";
+}
+
+function newGame() {
+  originalSentence = SENTENCES[Math.floor(Math.random() * SENTENCES.length)];
+  cipherKey = Math.floor(Math.random() * 25) + 1;
+  encodedSentence = caesar(originalSentence, cipherKey);
+  userShift = 0; wheelAngle = 0;
+  document.getElementById("encoded-display").textContent = encodedSentence.toUpperCase();
+  document.getElementById("result-banner").style.display = "none";
+  drawWheel(0); updateDecoded();
+}
+
+let dragging = false, lastAngle = null;
+function getAngle(e, rect) {
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy = e.touches ? e.touches[0].clientY : e.clientY;
+  return Math.atan2(cy - rect.top - CY, cx - rect.left - CX) * 180 / Math.PI;
+}
+const wheelEl = document.getElementById("wheel-svg");
+wheelEl.addEventListener("mousedown", e => { dragging = true; lastAngle = getAngle(e, wheelEl.getBoundingClientRect()); });
+wheelEl.addEventListener("touchstart", e => { e.preventDefault(); dragging = true; lastAngle = getAngle(e, wheelEl.getBoundingClientRect()); }, { passive: false });
+window.addEventListener("mousemove", e => {
+  if (!dragging) return;
+  const a = getAngle(e, wheelEl.getBoundingClientRect());
+  let d = a - lastAngle; if (d > 180) d -= 360; if (d < -180) d += 360;
+  wheelAngle += d; lastAngle = a;
+  userShift = (((Math.round(wheelAngle / (360 / N))) % N) + N) % N;
+  drawWheel(wheelAngle); updateDecoded();
+});
+window.addEventListener("touchmove", e => {
+  if (!dragging) return; e.preventDefault();
+  const a = getAngle(e, wheelEl.getBoundingClientRect());
+  let d = a - lastAngle; if (d > 180) d -= 360; if (d < -180) d += 360;
+  wheelAngle += d; lastAngle = a;
+  userShift = (((Math.round(wheelAngle / (360 / N))) % N) + N) % N;
+  drawWheel(wheelAngle); updateDecoded();
+}, { passive: false });
+window.addEventListener("mouseup", () => { dragging = false; });
+window.addEventListener("touchend", () => { dragging = false; });
+document.getElementById("new-game-btn").addEventListener("click", newGame);
+newGame();
+</script>
